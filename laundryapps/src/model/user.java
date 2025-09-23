@@ -5,6 +5,8 @@ public class user {
     private String nama;
     private String username;
     private String password;
+    
+    public user() {}
 
     // Setter dan Getter
     public String getId() { return id; }
