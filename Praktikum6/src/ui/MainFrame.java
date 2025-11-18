@@ -14,7 +14,7 @@ public class MainFrame extends JFrame {
         setSize(500, 400);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        setLayout(null); // sesuai modul (pakai null layout)
+        setLayout(null); 
 
         // Judul
         JLabel lblTitle = new JLabel("Laundry Apps");

@@ -53,6 +53,7 @@ public class LoginFrame extends JFrame {
         btnLogin = new JButton("Login");
         btnLogin.setBounds(120, 160, 100, 30);
         add(btnLogin);
+        
 
         // Event handler login
         btnLogin.addActionListener(new ActionListener() {
@@ -60,6 +61,25 @@ public class LoginFrame extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 String u = txtUsername.getText();
                 String p = txtPassword.getText();
+                
+                
+                try {
+                    util.ValidationUtil.validate(u, p);
+
+                    service.LoginService service = new service.LoginService();
+                    service.login(u, p);
+
+                    JOptionPane.showMessageDialog(null, "Login berhasil");
+                    new MainFrame().setVisible(true);
+                    dispose();
+                    return;
+                } catch (error.ValidationException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage());
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(null, "Terjadi kesalahan: " + ex.getMessage());
+                }
+
+                
 
                 if (user.login(u, p)) {
                     JOptionPane.showMessageDialog(null, "Login berhasil");
