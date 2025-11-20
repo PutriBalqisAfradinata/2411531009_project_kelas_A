@@ -3,153 +3,114 @@ package ui;
 import javax.swing.*;
 import DAO.CustomerRepo;
 import table.TableCustomer;
+import model.CustomerBuilder;
 import model.customer;
 
-import java.util.List;
+import java.awt.event.*;
 
 public class CustomerFrame extends JFrame {
-    private JTextField txtNama, txtAlamat, txtNoHp;
+
+    private JTextField txtNama, txtEmail, txtAlamat, txtHp;
     private JTable table;
-    private CustomerRepo repo;
+    private CustomerRepo repo = new CustomerRepo();
     private String selectedId = null;
 
     public CustomerFrame() {
-        setTitle("Manajemen Customer");
-        setSize(650, 450);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        setLocationRelativeTo(null);
+        setTitle("PELANGGAN");
+        setSize(650, 500);
         setLayout(null);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        // Label dan TextField
-        JLabel lblNama = new JLabel("Nama:");
-        lblNama.setBounds(20, 20, 80, 25);
-        add(lblNama);
+        JLabel l1 = new JLabel("Nama");
+        l1.setBounds(30, 30, 100, 25);
+        add(l1);
+
         txtNama = new JTextField();
-        txtNama.setBounds(120, 20, 200, 25);
+        txtNama.setBounds(150, 30, 300, 25);
         add(txtNama);
 
-        JLabel lblAlamat = new JLabel("Alamat:");
-        lblAlamat.setBounds(20, 60, 80, 25);
-        add(lblAlamat);
+        JLabel l2 = new JLabel("Email");
+        l2.setBounds(30, 70, 100, 25);
+        add(l2);
+
+        txtEmail = new JTextField();
+        txtEmail.setBounds(150, 70, 300, 25);
+        add(txtEmail);
+
+        JLabel l3 = new JLabel("Alamat");
+        l3.setBounds(30, 110, 100, 25);
+        add(l3);
+
         txtAlamat = new JTextField();
-        txtAlamat.setBounds(120, 60, 200, 25);
+        txtAlamat.setBounds(150, 110, 300, 25);
         add(txtAlamat);
 
-        JLabel lblNoHp = new JLabel("No HP:");
-        lblNoHp.setBounds(20, 100, 80, 25);
-        add(lblNoHp);
-        txtNoHp = new JTextField();
-        txtNoHp.setBounds(120, 100, 200, 25);
-        add(txtNoHp);
+        JLabel l4 = new JLabel("No HP");
+        l4.setBounds(30, 150, 100, 25);
+        add(l4);
 
-        // Tombol
-        JButton btnSave = new JButton("Save");
-        btnSave.setBounds(350, 20, 100, 25);
+        txtHp = new JTextField();
+        txtHp.setBounds(150, 150, 300, 25);
+        add(txtHp);
+
+        JButton btnSave = new JButton("Simpan");
+        btnSave.setBounds(150, 200, 100, 30);
         add(btnSave);
 
-        JButton btnUpdate = new JButton("Update");
-        btnUpdate.setBounds(350, 60, 100, 25);
-        add(btnUpdate);
-
-        JButton btnDelete = new JButton("Delete");
-        btnDelete.setBounds(350, 100, 100, 25);
-        add(btnDelete);
-
-        JButton btnCancel = new JButton("Cancel");
-        btnCancel.setBounds(350, 140, 100, 25);
+        JButton btnCancel = new JButton("Batal");
+        btnCancel.setBounds(260, 200, 100, 30);
         add(btnCancel);
 
-        // Tabel
         table = new JTable();
         JScrollPane sp = new JScrollPane(table);
-        sp.setBounds(20, 200, 600, 180);
+        sp.setBounds(30, 260, 580, 180);
         add(sp);
 
-        repo = new CustomerRepo();
         loadTable();
 
-        // Event Tombol Save
-        btnSave.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                customer c = new customer();
-                c.setNama(txtNama.getText());
-                c.setAlamat(txtAlamat.getText());
-                c.setNoHp(txtNoHp.getText());
+        btnSave.addActionListener(e -> {
+            customer c = new CustomerBuilder()
+                    .setId(selectedId == null ? "" : selectedId)
+                    .setNama(txtNama.getText())
+                    .setEmail(txtEmail.getText())
+                    .setAlamat(txtAlamat.getText())
+                    .setHp(txtHp.getText())
+                    .build();
+
+            if (selectedId == null) {
                 repo.save(c);
-                loadTable();
-                reset();
+            } else {
+                repo.update(c);
             }
+
+            clear();
+            loadTable();
         });
 
-        // Event Tombol Update
-        btnUpdate.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                if (selectedId != null) {
-                    customer c = new customer();
-                    c.setId(selectedId);
-                    c.setNama(txtNama.getText());
-                    c.setAlamat(txtAlamat.getText());
-                    c.setNoHp(txtNoHp.getText());
-                    repo.update(c);
-                    loadTable();
-                    reset();
-                }
-            }
-        });
+        btnCancel.addActionListener(e -> clear());
 
-        // Event Tombol Delete
-        btnDelete.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                if (selectedId != null) {
-                    repo.delete(selectedId);
-                    loadTable();
-                    reset();
-                }
-            }
-        });
-
-        // Event Tombol Cancel
-        btnCancel.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent e) {
-                reset();
-            }
-        });
-
-        // Event Klik Tabel
-        table.getSelectionModel().addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent e) {
+        table.addMouseListener(new MouseAdapter() {
+            public void mouseClicked(MouseEvent evt) {
                 int row = table.getSelectedRow();
-                if (row != -1) {
-                    selectedId = (String) table.getValueAt(row, 0);
-                    txtNama.setText((String) table.getValueAt(row, 1));
-                    txtAlamat.setText((String) table.getValueAt(row, 2));
-                    txtNoHp.setText((String) table.getValueAt(row, 3));
-                }
+                selectedId = table.getValueAt(row, 0).toString();
+                txtNama.setText(table.getValueAt(row, 1).toString());
+                txtEmail.setText(table.getValueAt(row, 2).toString());
+                txtAlamat.setText(table.getValueAt(row, 3).toString());
+                txtHp.setText(table.getValueAt(row, 4).toString());
             }
         });
     }
 
-    // Muat ulang data tabel
-    private void loadTable() {
-        List<customer> list = repo.show();
-        TableCustomer model = new TableCustomer(list);
-        table.setModel(model);
-    }
-
-    // Reset input
-    private void reset() {
+    private void clear() {
         txtNama.setText("");
+        txtEmail.setText("");
         txtAlamat.setText("");
-        txtNoHp.setText("");
+        txtHp.setText("");
         selectedId = null;
     }
 
-    // Untuk testing langsung jalankan CustomerFrame
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new CustomerFrame().setVisible(true);
-            }
-        });
+    private void loadTable() {
+        table.setModel(new TableCustomer(repo.show()));
     }
 }

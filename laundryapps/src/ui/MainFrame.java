@@ -36,6 +36,16 @@ public class MainFrame extends JFrame {
         btnPelanggan.setBounds(330, 100, 120, 50);
         add(btnPelanggan);
 
+        btnPelanggan.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.out.println("TOMBOL PELANGGAN DIKLIK!");
+
+                new CustomerFrame().setVisible(true);
+                System.out.println("SEHARUSNYA CUSTOMERFRAME MUNCUL...");
+            }
+        });
+
         // Baris kedua tombol
         btnPengguna = new JButton("PENGGUNA");
         btnPengguna.setBounds(50, 170, 120, 50);
@@ -67,6 +77,15 @@ public class MainFrame extends JFrame {
                     System.exit(0);
                 }
             }
+        });
+    }
+
+    // ===========================
+    // 🔥 METHOD MAIN ADA DI SINI
+    // ===========================
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            new MainFrame().setVisible(true);
         });
     }
 }
