@@ -107,5 +107,34 @@ public class UserRepo implements UserDAO {
 			}
 		}
 	}
+	
+	public user getByUsername(String username) {
+	    user u = null;
+
+	    String sql = "SELECT * FROM user WHERE username = ? LIMIT 1";
+
+	    try {
+	        PreparedStatement st = connection.prepareStatement(sql);
+	        st.setString(1, username);
+	        ResultSet rs = st.executeQuery();
+
+	        if (rs.next()) {
+	            u = new user();
+	            u.setId(rs.getString("id"));
+	            u.setNama(rs.getString("name"));
+	            u.setUsername(rs.getString("username"));
+	            u.setPassword(rs.getString("password"));
+	        }
+
+	        rs.close();
+	        st.close();
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return u;
+	}
+
     
 }
